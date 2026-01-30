@@ -39,7 +39,6 @@ export default function App() {
     const [filter, setFilter] = useState(FILTERS.ALL);
     const [tasks, setTasks] = useState(() => loadTasks() ?? seed);
 
-
     const [open, setOpen] = useState(false);
     const [form, setForm] = useState({
         description: "",
@@ -123,7 +122,7 @@ export default function App() {
         const field = editing.field;
         const raw = String(editing.value ?? "").trim();
 
-
+        // нельзя сохранить пустое
         if (!raw) {
             setEditing({ id: null, field: null, value: "" });
             return;
@@ -132,25 +131,11 @@ export default function App() {
         if (field === "description") {
             updateTask(id, { description: raw });
             setEditing({ id: null, field: null, value: "" });
-            return;
-        }
-
-        if (field === "deadline") {
-            const iso = dmyToIso(raw);
-            if (!iso) {
-
-                setEditing({ id: null, field: null, value: "" });
-                return;
-            }
-            updateTask(id, { deadlineIso: iso });
-            setEditing({ id: null, field: null, value: "" });
-            return;
         }
     }
 
     return (
         <div className="page">
-
             <div className="topBar">
                 <div className="topBarInner">
                     {Object.values(FILTERS).map((f) => (
@@ -166,7 +151,6 @@ export default function App() {
             </div>
 
             <div className="content">
-
                 <div className="tableArea">
                     <div className="tableBox">
                         <table className="tasksTable">
@@ -189,8 +173,6 @@ export default function App() {
                                 filtered.map((t) => {
                                     const isEditingDesc =
                                         editing.id === t.id && editing.field === "description";
-                                    const isEditingDeadline =
-                                        editing.id === t.id && editing.field === "deadline";
 
                                     const deadlineText = isoToDmy(t.deadlineIso);
                                     const deadlineRed =
@@ -202,7 +184,8 @@ export default function App() {
                                             <td
                                                 className="tdDesc"
                                                 onClick={() => {
-                                                    if (!isEditingDesc) startEdit(t.id, "description", t.description);
+                                                    if (!isEditingDesc)
+                                                        startEdit(t.id, "description", t.description);
                                                 }}
                                             >
                                                 {isEditingDesc ? (
@@ -234,32 +217,8 @@ export default function App() {
                                             </td>
 
 
-                                            <td
-                                                className={"tdDeadline " + (deadlineRed ? "red" : "")}
-                                                onClick={() => {
-                                                    if (!isEditingDeadline)
-                                                        startEdit(t.id, "deadline", deadlineText);
-                                                }}
-                                            >
-                                                {isEditingDeadline ? (
-                                                    <input
-                                                        className="cellInput"
-                                                        autoFocus
-                                                        value={editing.value}
-                                                        placeholder="ДД.ММ.ГГГГ"
-                                                        onChange={(e) =>
-                                                            setEditing((p) => ({ ...p, value: e.target.value }))
-                                                        }
-                                                        onBlur={commitEdit}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === "Enter") e.currentTarget.blur();
-                                                            if (e.key === "Escape")
-                                                                setEditing({ id: null, field: null, value: "" });
-                                                        }}
-                                                    />
-                                                ) : (
-                                                    <span className="cellText">{deadlineText}</span>
-                                                )}
+                                            <td className={"tdDeadline " + (deadlineRed ? "red" : "")}>
+                                                <span className="cellText">{deadlineText}</span>
                                             </td>
                                         </tr>
                                     );
@@ -268,7 +227,6 @@ export default function App() {
                             </tbody>
                         </table>
                     </div>
-
 
                     <div className="deleteCol">
                         <div className="deleteHeaderSpacer" />
@@ -280,13 +238,7 @@ export default function App() {
                                 aria-label="Удалить"
                                 title="Удалить"
                             >
-                                <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    aria-hidden="true"
-                                >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                     <path
                                         d="M9 3h6l1 2h5v2H3V5h5l1-2zm1 7h2v9h-2v-9zm4 0h2v9h-2v-9zM6 8h12l-1 13a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 8z"
                                         stroke="black"
@@ -319,9 +271,7 @@ export default function App() {
                             className={"inp " + (errors.description ? "err" : "")}
                             placeholder="Введите описание"
                             value={form.description}
-                            onChange={(e) =>
-                                setForm((p) => ({ ...p, description: e.target.value }))
-                            }
+                            onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
                         />
                         {errors.description && <div className="errText">{errors.description}</div>}
                     </div>
@@ -343,9 +293,7 @@ export default function App() {
                             className={"inp " + (errors.deadlineDmy ? "err" : "")}
                             placeholder="Укажите дедлайн"
                             value={form.deadlineDmy}
-                            onChange={(e) =>
-                                setForm((p) => ({ ...p, deadlineDmy: e.target.value }))
-                            }
+                            onChange={(e) => setForm((p) => ({ ...p, deadlineDmy: e.target.value }))}
                         />
                         {errors.deadlineDmy && <div className="errText">{errors.deadlineDmy}</div>}
                     </div>
