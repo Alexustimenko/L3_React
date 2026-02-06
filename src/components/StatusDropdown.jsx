@@ -1,19 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-
-const STATUS = {
-    ACTIVE: "Активная задача",
-    DONE: "Задача выполнена",
-    CANCELED: "Задача отменена",
-};
-
-export const STATUSES = Object.values(STATUS);
-
-export function statusColor(status) {
-    if (status === STATUS.ACTIVE) return "var(--pink)";
-    if (status === STATUS.DONE) return "var(--green)";
-    if (status === STATUS.CANCELED) return "var(--yellow)";
-    return "var(--pink)";
-}
+import { STATUSES, statusColor } from "../constants.js";
 
 export default function StatusDropdown({ value, onChange, disabled = false }) {
     const [open, setOpen] = useState(false);
@@ -38,13 +24,15 @@ export default function StatusDropdown({ value, onChange, disabled = false }) {
                 style={{ background: bg }}
                 onClick={() => !disabled && setOpen((v) => !v)}
                 disabled={disabled}
+                aria-haspopup="listbox"
+                aria-expanded={open}
             >
                 <span className="statusText">{value}</span>
                 <span className={"chev " + (open ? "up" : "down")} />
             </button>
 
             {open && !disabled && (
-                <div className="statusMenu" role="menu">
+                <div className="statusMenu" role="listbox" aria-label="Выбор статуса">
                     {STATUSES.map((s) => (
                         <button
                             key={s}
@@ -55,6 +43,8 @@ export default function StatusDropdown({ value, onChange, disabled = false }) {
                                 onChange?.(s);
                                 setOpen(false);
                             }}
+                            role="option"
+                            aria-selected={s === value}
                         >
                             {s}
                         </button>
@@ -64,5 +54,3 @@ export default function StatusDropdown({ value, onChange, disabled = false }) {
         </div>
     );
 }
-
-export const STATUS_LABELS = STATUS;
